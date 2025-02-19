@@ -2,7 +2,7 @@
 
 namespace OsuBeatmapArtwork_Downloader.Models;
 
-public class AppSetting
+public class AppSettings
 {
     public string DefaultFolderPath { get; set; } = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
     public bool AutoSaveToDefaultFolderPath { get; set; } = false;

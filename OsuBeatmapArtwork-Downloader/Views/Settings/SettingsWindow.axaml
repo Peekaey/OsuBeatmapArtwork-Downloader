@@ -2,8 +2,77 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="OsuBeatmapArtwork-Downloader.Views.Settings.SettingsWindow"
-        Title="SettingsWindow">
-    Welcome to Avalonia!
+        xmlns:viewModels="clr-namespace:OsuBeatmapArtwork_Downloader.ViewModels"
+        mc:Ignorable="d" 
+        d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="OsuBeatmapArtwork_Downloader.Views.Settings.SettingsWindow"
+        x:DataType="viewModels:SettingsWindowViewModel"
+        Height="500"
+        Width="500"
+        Title="Settings"
+        CanResize="False"
+        Background="{DynamicResource PrimaryBackgroundColor}">
+
+    
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <viewModels:SettingsWindowViewModel/>
+    </Design.DataContext>
+    
+    <Grid Margin="20"
+          Background="{DynamicResource PrimaryBackgroundColor}">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,5">
+            <TextBlock Text="Default save folder path:"
+                       VerticalAlignment="Center"
+                       Foreground="{DynamicResource PrimaryForegroundBrush}"
+                       Margin="0,0,10,0" />
+            <TextBox Text="{Binding DefaultFolderPath, Mode=TwoWay}"
+                     MinWidth="300"
+                     VerticalAlignment="Center" />
+        </StackPanel>
+        
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,5">
+            <TextBlock Text="Automatically save screenshot to default save folder path"
+                       VerticalAlignment="Center"
+                       Margin="0,0,10,0"
+                       Foreground="{DynamicResource PrimaryForegroundColor}"/>
+            <CheckBox IsChecked="{Binding AutoSaveToDefaultFolderPath, Mode=TwoWay}"
+                      BorderBrush="{DynamicResource CheckBoxBorderBrush}"
+                      VerticalAlignment="Center" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,5">
+            <TextBlock Text="Automatically copy screenshot to clipboard"
+                       VerticalAlignment="Center"
+                       Margin="0,0,10,0" 
+                       Foreground="{DynamicResource PrimaryForegroundColor}"/>
+            <CheckBox IsChecked="{Binding AutoSaveToClipboard, Mode=TwoWay}"
+                      BorderBrush="{DynamicResource CheckBoxBorderBrush}"
+                      VerticalAlignment="Center" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0,10" VerticalAlignment="Center">
+            <TextBlock Text="Theme:"
+                       VerticalAlignment="Center"
+                       Margin="0,0,10,0"
+                       Foreground="{DynamicResource PrimaryForegroundColor}" />
+            <ComboBox ItemsSource="{Binding Themes}"
+                      SelectedItem="{Binding SelectedTheme, Mode=TwoWay}"
+                      Width="" />
+        </StackPanel>
+    </Grid>
 </Window>

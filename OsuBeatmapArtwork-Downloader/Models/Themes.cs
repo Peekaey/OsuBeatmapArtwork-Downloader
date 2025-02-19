@@ -1,6 +1,7 @@
 ﻿namespace OsuBeatmapArtwork_Downloader.Models;
 
-public class Themes
+public enum Themes
 {
-    
+    Dark,
+    Light
 }

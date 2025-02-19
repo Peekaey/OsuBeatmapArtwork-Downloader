@@ -7,14 +7,103 @@
         x:Class="OsuBeatmapArtwork_Downloader.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="OsuBeatmapArtwork_Downloader">
+        Title="OsuBeatmapArtwork_Downloader"
+        TransparencyLevelHint="AcrylicBlur"
+        Background="Transparent"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="NoChrome">
+  
+  <Design.DataContext>
+    <vm:MainWindowViewModel/>
+  </Design.DataContext>
 
-    <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainWindowViewModel/>
-    </Design.DataContext>
+  <DockPanel>
+    <!-- Custom Title Bar with Acrylic Effect -->
+    <ExperimentalAcrylicBorder DockPanel.Dock="Top" Height="40">
+      <ExperimentalAcrylicBorder.Material>
+        <ExperimentalAcrylicMaterial BackgroundSource="Digger"
+                                     TintColor="Black"
+                                     TintOpacity="1"
+                                     MaterialOpacity="0.65" />
+      </ExperimentalAcrylicBorder.Material>
+      <!-- Content inside the acrylic title bar -->
+      <Grid ZIndex="100">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <!-- Draggable Area -->
+        <Border Background="Transparent"
+                VerticalAlignment="Center"
+                PointerPressed="TitleBar_OnPointerPressed">
+          <TextBlock Text="Beatmap Artwork Downloader" 
+                     VerticalAlignment="Center" 
+                     Margin="10,0"/>
+        </Border>
+        <!-- Custom Window Buttons -->
+        <StackPanel Orientation="Horizontal"
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Margin="0,0,10,0">
+          <Button Content="_" Width="30" Height="30"  Click="Minimize_Click"/>
+          <Button Content="☐" Width="30" Height="20" Click="Maximize_Click"/>
+          <Button Content="X" Width="30" Height="20" Click="Close_Click"/>
+        </StackPanel>
+      </Grid>
+    </ExperimentalAcrylicBorder>
 
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    <!-- Second Bar for Additional Controls (e.g., Settings) -->
+    <ExperimentalAcrylicBorder DockPanel.Dock="Top" Height="32">
+      <ExperimentalAcrylicBorder.Material>
+        <ExperimentalAcrylicMaterial BackgroundSource="Digger"
+                                     TintColor="Black"
+                                     TintOpacity="1"
+                                     MaterialOpacity="0.65" />
+      </ExperimentalAcrylicBorder.Material>
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <!-- Optional: Place left-side content here if needed -->
+        <StackPanel Orientation="Horizontal"
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Margin="0,0,10,0">
+          <!-- Settings Icon Button -->
+          <Button Margin="0,10,20,0"
+                  Padding="10,5"
+                  Click="OnSettingsButtonClick"> 
+            <StackPanel Orientation="Horizontal"
+                        Spacing="5"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center">
+            <Path Data="{StaticResource SettingsIcon}"
+                  Width="16"
+                  Height="16"
+                  Fill="{DynamicResource PrimaryForegroundColor}"
+                  />
+            <TextBlock Text="Settings"
+                       VerticalAlignment="Center"
+                       Foreground="{DynamicResource PrimaryForegroundColor}"/>
+        </StackPanel>
+            </Button>
+          </StackPanel>
+      </Grid>
+    </ExperimentalAcrylicBorder>
 
+    <!-- Main Content -->
+    <Grid>
+      <!-- Acrylic Background for Main Content -->
+      <ExperimentalAcrylicBorder IsHitTestVisible="False">
+        <ExperimentalAcrylicBorder.Material>
+          <ExperimentalAcrylicMaterial BackgroundSource="Digger"
+                                       TintColor="Black"
+                                       TintOpacity="1"
+                                       MaterialOpacity="0.65" />
+        </ExperimentalAcrylicBorder.Material>
+      </ExperimentalAcrylicBorder>
+      <!-- Place your other main content here -->
+    </Grid>
+  </DockPanel>
 </Window>

@@ -1,10 +1,15 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Design.PreviewWith>
-        <Border Padding="20">
-            <!-- Add Controls for Previewer Here -->
-        </Border>
-    </Design.PreviewWith>
-
-    <!-- Add Styles Here -->
+    <Styles.Resources>
+        <Color x:Key="PrimaryBackgroundColor">#1E1E1E</Color>
+        <Color x:Key="SecondaryBackgroundColor">#333333</Color>
+        <Color x:Key="PrimaryForegroundColor">#FFFFFF</Color>
+        <Color x:Key="CheckBoxBorderBrushColor">#FFFFFF</Color>
+        <Color x:Key="AcrylicBackgroundColor"> #000000 </Color>
+        <SolidColorBrush x:Key="PrimaryBackgroundBrush" Color="{DynamicResource PrimaryBackgroundColor}" />
+        <SolidColorBrush x:Key="SecondaryBackgroundBrush" Color="{DynamicResource SecondaryBackgroundColor}" />
+        <SolidColorBrush x:Key="PrimaryForegroundBrush" Color="{DynamicResource PrimaryForegroundColor}" />
+        <SolidColorBrush x:Key="CheckBoxBorderBrush" Color="{DynamicResource CheckBoxBorderBrushColor}"></SolidColorBrush>
+        <SolidColorBrush x:Key="AcrylicBackground" Color="{DynamicResource AcrylicBackgroundColor}"></SolidColorBrush>
+    </Styles.Resources>
 </Styles>
