@@ -4,9 +4,16 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core;
 using Avalonia.Data.Core.Plugins;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.Styling;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using OsuBeatmapArtwork_Downloader.Helpers;
+using OsuBeatmapArtwork_Downloader.Interfaces;
 using OsuBeatmapArtwork_Downloader.Models;
+using OsuBeatmapArtwork_Downloader.Services;
 using OsuBeatmapArtwork_Downloader.ViewModels;
 using OsuBeatmapArtwork_Downloader.Views;
 
@@ -36,6 +43,34 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
+        var services = new ServiceCollection();
+        services.AddSingleton(new CookieContainer());
+        services.AddSingleton<IApiManagerService, ApiManagerService>();
+        services.AddHttpClient<ApiManagerService>()
+            .ConfigurePrimaryHttpMessageHandler(sp =>
+            {
+                return new HttpClientHandler
+                {
+                    AllowAutoRedirect = false,
+                    CookieContainer = sp.GetRequiredService<CookieContainer>(),
+                    UseCookies = true,
+                };
+            });
+        services.AddSingleton<IBeatmapService, BeatmapService>();
+        services.AddSingleton<IFileService, FileService>();
+        services.AddSingleton<IOsPlatformHelpers, OsPlatformHelpers>();
+        services.AddSingleton<IValidationHelper, ValidationHelper>();
+        services.AddSingleton<IPlaywrightService, PlaywrightService>();
+        services.AddSingleton<IImageHelpers, ImageHelpers>();
+        
+        services.AddSingleton<AppSettings>();
+        
+        services.AddTransient<MainWindowViewModel>();
+        services.AddTransient<SettingsWindowViewModel>();
+        
+        
+        _serviceProvider = services.BuildServiceProvider();
+        
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
@@ -43,7 +78,7 @@ public partial class App : Application
             DisableAvaloniaDataAnnotationValidation();
             desktop.MainWindow = new MainWindow
             {
-                DataContext = new MainWindowViewModel(),
+                DataContext = _serviceProvider.GetRequiredService<MainWindowViewModel>()
             };
         }
 

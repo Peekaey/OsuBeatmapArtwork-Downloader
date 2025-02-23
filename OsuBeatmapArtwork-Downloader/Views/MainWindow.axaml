@@ -6,6 +6,8 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="OsuBeatmapArtwork_Downloader.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
+        Height="700"
+        Width="700"
         Icon="/Assets/avalonia-logo.ico"
         Title="OsuBeatmapArtwork_Downloader"
         TransparencyLevelHint="AcrylicBlur"
@@ -22,7 +24,7 @@
     <ExperimentalAcrylicBorder DockPanel.Dock="Top" Height="40">
       <ExperimentalAcrylicBorder.Material>
         <ExperimentalAcrylicMaterial BackgroundSource="Digger"
-                                     TintColor="Black"
+                                     TintColor="{DynamicResource AcrylicBackgroundColor}"
                                      TintOpacity="1"
                                      MaterialOpacity="0.65" />
       </ExperimentalAcrylicBorder.Material>
@@ -38,16 +40,34 @@
                 PointerPressed="TitleBar_OnPointerPressed">
           <TextBlock Text="Beatmap Artwork Downloader" 
                      VerticalAlignment="Center" 
-                     Margin="10,0"/>
+                     Margin="10,0"
+                     Foreground="{DynamicResource PrimaryForegroundColor}"/>
         </Border>
         <!-- Custom Window Buttons -->
         <StackPanel Orientation="Horizontal"
                     Grid.Column="1"
                     VerticalAlignment="Center"
                     Margin="0,0,10,0">
-          <Button Content="_" Width="30" Height="30"  Click="Minimize_Click"/>
-          <Button Content="☐" Width="30" Height="20" Click="Maximize_Click"/>
-          <Button Content="X" Width="30" Height="20" Click="Close_Click"/>
+          <Button Width="30" Height="25" Click="Minimise">
+            <Path Data="{StaticResource MinimiseIcon}"
+                  Fill="{DynamicResource PrimaryForegroundColor}"
+                  Stretch="Uniform"
+                  VerticalAlignment="Center"/>
+          </Button>
+          <Button Width="30" Height="25" Click="Maximise">
+            <Path Data="{StaticResource MaximiseIcon}"
+                  Fill="{DynamicResource PrimaryForegroundColor}"
+                  StrokeThickness="2"
+                  Stretch="Uniform"
+                  VerticalAlignment="Center"/>
+            </Button>
+          <Button Width="30" Height="25" Click="Close">
+            <Path Data="{StaticResource CloseIcon}"
+                  Stroke="{DynamicResource PrimaryForegroundColor}"
+                  StrokeThickness="1.06"
+                  Stretch="Uniform"
+                  VerticalAlignment="Center"/>
+            </Button>
         </StackPanel>
       </Grid>
     </ExperimentalAcrylicBorder>
@@ -56,7 +76,7 @@
     <ExperimentalAcrylicBorder DockPanel.Dock="Top" Height="32">
       <ExperimentalAcrylicBorder.Material>
         <ExperimentalAcrylicMaterial BackgroundSource="Digger"
-                                     TintColor="Black"
+                                     TintColor="{DynamicResource AcrylicBackgroundColor}"
                                      TintOpacity="1"
                                      MaterialOpacity="0.65" />
       </ExperimentalAcrylicBorder.Material>
@@ -71,24 +91,27 @@
                     VerticalAlignment="Center"
                     Margin="0,0,10,0">
           <!-- Settings Icon Button -->
-          <Button Margin="0,10,20,0"
+          <Button VerticalContentAlignment="Center"
+                  HorizontalContentAlignment="Center"
                   Padding="10,5"
-                  Click="OnSettingsButtonClick"> 
+                  Height="30"
+                  Click="RenderSettingsPage"> 
             <StackPanel Orientation="Horizontal"
                         Spacing="5"
                         VerticalAlignment="Center"
                         HorizontalAlignment="Center">
-            <Path Data="{StaticResource SettingsIcon}"
-                  Width="16"
-                  Height="16"
-                  Fill="{DynamicResource PrimaryForegroundColor}"
-                  />
-            <TextBlock Text="Settings"
-                       VerticalAlignment="Center"
-                       Foreground="{DynamicResource PrimaryForegroundColor}"/>
+              <Path Data="{StaticResource SettingsIcon}"
+                    Width="16"
+                    Height="16"
+                    Fill="{DynamicResource PrimaryForegroundColor}" />
+              <TextBlock Text="Settings"
+                         VerticalAlignment="Center"
+                         HorizontalAlignment="Center"
+                         FontSize="13"
+                         Foreground="{DynamicResource PrimaryForegroundColor}"/>
+            </StackPanel>
+          </Button>
         </StackPanel>
-            </Button>
-          </StackPanel>
       </Grid>
     </ExperimentalAcrylicBorder>
 
@@ -98,12 +121,50 @@
       <ExperimentalAcrylicBorder IsHitTestVisible="False">
         <ExperimentalAcrylicBorder.Material>
           <ExperimentalAcrylicMaterial BackgroundSource="Digger"
-                                       TintColor="Black"
+                                       TintColor="{DynamicResource AcrylicBackgroundColor}"
                                        TintOpacity="1"
                                        MaterialOpacity="0.65" />
         </ExperimentalAcrylicBorder.Material>
       </ExperimentalAcrylicBorder>
       <!-- Place your other main content here -->
+      <StackPanel>
+      <TextBlock Text="Enter Beatmap ID"
+                 FontSize="24"
+                 Margin="0,0,0,20"
+                 HorizontalAlignment="Center"
+                 Foreground="{DynamicResource PrimaryForegroundColor}"/>
+      <TextBox Text="{Binding BeatmapId}"
+               MinWidth="300"
+               MaxHeight="30"
+               HorizontalAlignment="Center"
+               KeyDown="GetBeatmapForDownload">
+      </TextBox>
+      </StackPanel>
+      <!-- Images Panel -->
+      <ScrollViewer VerticalAlignment="Center" HorizontalAlignment="Center">
+        <ItemsControl ItemsSource="{Binding BeatmapImagesBitmap}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal" Margin="10"/>
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <Image Source="{Binding}" 
+                     Margin="10"
+                     Width="200"
+                     Height="200"
+                     Stretch="Uniform">
+                <Image.ContextMenu>
+                  <ContextMenu>
+                    <MenuItem Header="Save Image As..." Click="SaveImageToDiskViaContextMenu" />
+                  </ContextMenu>
+                </Image.ContextMenu>
+              </Image>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
     </Grid>
   </DockPanel>
 </Window>

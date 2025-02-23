@@ -31,6 +31,20 @@ public class SettingsWindowViewModel : ViewModelBase , INotifyPropertyChanged
             }
         }
     }
+    
+    public bool CreateSubfolderPerBeatmap
+    {
+        get => _appSettings.CreateSubfolderPerBeatmap;
+        set
+        {
+            if (_appSettings.CreateSubfolderPerBeatmap != value)
+            {
+                _appSettings.CreateSubfolderPerBeatmap = value;
+                OnPropertyChanged(nameof(CreateSubfolderPerBeatmap));
+            }
+        }
+    }
+
 
     public bool AutoSaveToDefaultFolderPath
     {
@@ -41,19 +55,6 @@ public class SettingsWindowViewModel : ViewModelBase , INotifyPropertyChanged
             {
                 _appSettings.AutoSaveToDefaultFolderPath = value;
                 OnPropertyChanged(nameof(AutoSaveToDefaultFolderPath));
-            }
-        }
-    }
-    
-    public bool AutoSaveToClipboard
-    {
-        get => _appSettings.AutoSaveToClipboard;
-        set
-        {
-            if (_appSettings.AutoSaveToClipboard != value)
-            {
-                _appSettings.AutoSaveToClipboard = value;
-                OnPropertyChanged(nameof(AutoSaveToClipboard));
             }
         }
     }

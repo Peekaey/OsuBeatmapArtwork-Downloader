@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -24,23 +25,22 @@ public partial class MainWindow : Window
             this.BeginMoveDrag(e);
         }
     }
-
-    private void Minimize_Click(object sender, RoutedEventArgs e)
+    private void Minimise(object sender, RoutedEventArgs e)
     {
         this.WindowState = WindowState.Minimized;
     }
 
-    private void Maximize_Click(object sender, RoutedEventArgs e)
+    private void Maximise(object sender, RoutedEventArgs e)
     {
         this.WindowState = this.WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
     }
 
-    private void Close_Click(object sender, RoutedEventArgs e)
+    private void Close(object sender, RoutedEventArgs e)
     {
         this.Close();
     }
     
-    private void OnSettingsButtonClick(object? sender, Avalonia.Interactivity.RoutedEventArgs eventArgs)
+    private void RenderSettingsPage(object? sender, Avalonia.Interactivity.RoutedEventArgs eventArgs)
     {
         // TODO Improve this and optimise
         var appSettings = new AppSettings();
@@ -50,9 +50,32 @@ public partial class MainWindow : Window
             WindowStartupLocation = WindowStartupLocation.CenterOwner,
             DataContext = settingsViewModel
         };
-        
         settingsWindow.ShowDialog(this);
-        Console.WriteLine("Settings button clicked!");
+    }
+
+    private void GetBeatmapForDownload(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Enter)
+        {
+            var textBox = sender as TextBox;
+            if (textBox != null)
+            {
+                string userInput = textBox.Text;
+                var downloadResult = ViewModel.DownloadBeatmap(userInput);
+            }
+        }
+    }
+    private void SaveImageToDiskViaContextMenu(object sender, RoutedEventArgs e)
+    {
+        var image = sender as Image;
+        if (image != null)
+        {
+            var imageStream = image.Source as MemoryStream;
+            if (imageStream != null)
+            {
+                ViewModel.SaveImageToDiskViaContextMenu(imageStream);
+            }
+        }
     }
     
 }

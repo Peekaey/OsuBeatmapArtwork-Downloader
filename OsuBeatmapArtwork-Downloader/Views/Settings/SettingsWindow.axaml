@@ -1,78 +1,123 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:OsuBeatmapArtwork_Downloader.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:viewModels="clr-namespace:OsuBeatmapArtwork_Downloader.ViewModels"
         mc:Ignorable="d" 
         d:DesignWidth="800" d:DesignHeight="450"
         x:Class="OsuBeatmapArtwork_Downloader.Views.Settings.SettingsWindow"
-        x:DataType="viewModels:SettingsWindowViewModel"
+        x:DataType="vm:SettingsWindowViewModel"
         Height="500"
         Width="500"
         Title="Settings"
         CanResize="False"
-        Background="{DynamicResource PrimaryBackgroundColor}">
+        TransparencyLevelHint="AcrylicBlur"
+        Background="Transparent"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="NoChrome">
 
-    
+  <Design.DataContext>
+    <vm:SettingsWindowViewModel/>
+  </Design.DataContext>
 
-    <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <viewModels:SettingsWindowViewModel/>
-    </Design.DataContext>
-    
-    <Grid Margin="20"
-          Background="{DynamicResource PrimaryBackgroundColor}">
+  <!-- Layered Grid: Background acrylic and foreground interactive content -->
+  <Grid>
+    <!-- Acrylic Background Layer (non-interactive) -->
+    <ExperimentalAcrylicBorder IsHitTestVisible="False">
+      <ExperimentalAcrylicBorder.Material>
+        <ExperimentalAcrylicMaterial BackgroundSource="Digger"
+                                     TintColor="{DynamicResource AcrylicBackgroundColor}"
+                                     TintOpacity="1"
+                                     MaterialOpacity="0.65" />
+      </ExperimentalAcrylicBorder.Material>
+    </ExperimentalAcrylicBorder>
 
+    <!-- Foreground Content Layer -->
+    <DockPanel>
+      <!-- Acrylic Title Bar -->
+      <ExperimentalAcrylicBorder DockPanel.Dock="Top" Height="40">
+        <ExperimentalAcrylicBorder.Material>
+          <ExperimentalAcrylicMaterial BackgroundSource="Digger"
+                                       TintColor="{DynamicResource AcrylicBackgroundColor}"
+                                       TintOpacity="1"
+                                       MaterialOpacity="0.65" />
+        </ExperimentalAcrylicBorder.Material>
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+          </Grid.ColumnDefinitions>
+          <!-- Draggable Area -->
+          <Border Background="Transparent"
+                  VerticalAlignment="Center"
+                  PointerPressed="TitleBar_OnPointerPressed">
+            <TextBlock Text="Settings" 
+                       VerticalAlignment="Center" 
+                       Margin="10,0"
+                       Foreground="{DynamicResource PrimaryForegroundBrush}"/>
+          </Border>
+          <!-- Window Button (Close) -->
+          <StackPanel Orientation="Horizontal"
+                      Grid.Column="1"
+                      VerticalAlignment="Center"
+                      Margin="0,0,10,0">
+            <Button Content="X" Width="30" Height="30" Click="Close_Click"/>
+          </StackPanel>
+        </Grid>
+      </ExperimentalAcrylicBorder>
+
+      <!-- Main Settings Content -->
+      <Grid Margin="20" Background="Transparent">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,5">
-            <TextBlock Text="Default save folder path:"
-                       VerticalAlignment="Center"
-                       Foreground="{DynamicResource PrimaryForegroundBrush}"
-                       Margin="0,0,10,0" />
-            <TextBox Text="{Binding DefaultFolderPath, Mode=TwoWay}"
-                     MinWidth="300"
-                     VerticalAlignment="Center" />
+          <TextBlock Text="Default save folder path:" 
+                     VerticalAlignment="Center"
+                     Foreground="{DynamicResource PrimaryForegroundBrush}"
+                     Margin="0,0,10,0" />
+          <TextBox Text="{Binding DefaultFolderPath, Mode=TwoWay}"
+                   MinWidth="300"
+                   VerticalAlignment="Center" />
         </StackPanel>
         
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,5">
-            <TextBlock Text="Automatically save screenshot to default save folder path"
-                       VerticalAlignment="Center"
-                       Margin="0,0,10,0"
-                       Foreground="{DynamicResource PrimaryForegroundColor}"/>
-            <CheckBox IsChecked="{Binding AutoSaveToDefaultFolderPath, Mode=TwoWay}"
-                      BorderBrush="{DynamicResource CheckBoxBorderBrush}"
-                      VerticalAlignment="Center" />
+          <TextBlock Text="Automatically save screenshot to default save folder path"
+                     VerticalAlignment="Center"
+                     Margin="0,0,10,0"
+                     Foreground="{DynamicResource PrimaryForegroundColor}"/>
+          <CheckBox IsChecked="{Binding AutoSaveToDefaultFolderPath, Mode=TwoWay}"
+                    BorderBrush="{DynamicResource CheckBoxBorderBrush}"
+                    VerticalAlignment="Center" />
         </StackPanel>
-
+        
         <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,5">
-            <TextBlock Text="Automatically copy screenshot to clipboard"
-                       VerticalAlignment="Center"
-                       Margin="0,0,10,0" 
-                       Foreground="{DynamicResource PrimaryForegroundColor}"/>
-            <CheckBox IsChecked="{Binding AutoSaveToClipboard, Mode=TwoWay}"
-                      BorderBrush="{DynamicResource CheckBoxBorderBrush}"
-                      VerticalAlignment="Center" />
+          <TextBlock Text="Create subfolder for each beatmap"
+                     VerticalAlignment="Center"
+                     Margin="0,0,10,0"
+                     Foreground="{DynamicResource PrimaryForegroundColor}"/>
+          <CheckBox IsChecked="{Binding CreateSubfolderPerBeatmap, Mode=TwoWay}"
+                    BorderBrush="{DynamicResource CheckBoxBorderBrush}"
+                    VerticalAlignment="Center" />
         </StackPanel>
-
-        <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0,10" VerticalAlignment="Center">
-            <TextBlock Text="Theme:"
-                       VerticalAlignment="Center"
-                       Margin="0,0,10,0"
-                       Foreground="{DynamicResource PrimaryForegroundColor}" />
-            <ComboBox ItemsSource="{Binding Themes}"
-                      SelectedItem="{Binding SelectedTheme, Mode=TwoWay}"
-                      Width="" />
+        
+        <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,10" VerticalAlignment="Center">
+          <TextBlock Text="Theme:" 
+                     VerticalAlignment="Center"
+                     Margin="0,0,10,0"
+                     Foreground="{DynamicResource PrimaryForegroundColor}" />
+          <ComboBox ItemsSource="{Binding Themes}"
+                    SelectedItem="{Binding SelectedTheme, Mode=TwoWay}"
+                    Width=""/>
         </StackPanel>
-    </Grid>
+      </Grid>
+    </DockPanel>
+  </Grid>
 </Window>
