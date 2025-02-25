@@ -1,8 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media.Imaging;
+using CommunityToolkit.Mvvm.Input;
 using OsuBeatmapArtwork_Downloader.Interfaces;
 using OsuBeatmapArtwork_Downloader.Models;
 
@@ -14,8 +20,6 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly IImageHelpers _imageHelpers;
     private readonly AppSettings _appSettings;
     private readonly IFileService _fileService;
-    
-    
     public MainWindowViewModel(IBeatmapService beatmapService, AppSettings appSettings, IImageHelpers imageHelpers, IFileService fileService)
     {
         _beatmapService = beatmapService;
@@ -23,7 +27,6 @@ public partial class MainWindowViewModel : ViewModelBase
         _imageHelpers = imageHelpers;
         _fileService = fileService;
     }
-    
     public string BeatmapId { get; set; }
     public ObservableCollection<MemoryStream> BeatmapImages { get; set; } 
     private ObservableCollection<Bitmap> _beatmapImagesBitmap = new ObservableCollection<Bitmap>();
@@ -37,22 +40,16 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
         
-        public async Task DownloadBeatmap(string beatmapId)
+    public async Task DownloadBeatmap(string beatmapId)
+    {
+        var beatmapImages = await _beatmapService.DownloadBeatmap(BeatmapId, _appSettings.AutoSaveToDefaultFolderPath, _appSettings.DefaultFolderPath);
+        if (beatmapImages != null)
         {
-            var beatmapImages = await _beatmapService.DownloadBeatmap(BeatmapId, _appSettings.AutoSaveToDefaultFolderPath, _appSettings.DefaultFolderPath);
-            if (beatmapImages != null)
-            {
-                BeatmapImages = new ObservableCollection<MemoryStream>(beatmapImages);
-                // Convert MemoryStream images to Bitmaps
-                var convertedBitmaps = _imageHelpers.ConvertMemoryStreamToBitmap(beatmapImages);
-                BeatmapImagesBitmap = new ObservableCollection<Bitmap>(convertedBitmaps);
-            }
+            BeatmapImages = new ObservableCollection<MemoryStream>(beatmapImages);
+            // Convert MemoryStream images to Bitmaps
+            var convertedBitmaps = _imageHelpers.ConvertMemoryStreamToBitmap(beatmapImages);
+            BeatmapImagesBitmap = new ObservableCollection<Bitmap>(convertedBitmaps);
         }
-
-        public async Task SaveImageToDiskViaContextMenu(MemoryStream memoryStream)
-        {
-            
-        }
-        
+    }
 
 }

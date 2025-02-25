@@ -65,17 +65,6 @@ public partial class MainWindow : Window
             }
         }
     }
-    private void SaveImageToDiskViaContextMenu(object sender, RoutedEventArgs e)
-    {
-        var image = sender as Image;
-        if (image != null)
-        {
-            var imageStream = image.Source as MemoryStream;
-            if (imageStream != null)
-            {
-                ViewModel.SaveImageToDiskViaContextMenu(imageStream);
-            }
-        }
-    }
+
     
 }

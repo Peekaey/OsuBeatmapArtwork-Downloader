@@ -60,14 +60,14 @@
                   StrokeThickness="2"
                   Stretch="Uniform"
                   VerticalAlignment="Center"/>
-            </Button>
+          </Button>
           <Button Width="30" Height="25" Click="Close">
             <Path Data="{StaticResource CloseIcon}"
                   Stroke="{DynamicResource PrimaryForegroundColor}"
                   StrokeThickness="1.06"
                   Stretch="Uniform"
                   VerticalAlignment="Center"/>
-            </Button>
+          </Button>
         </StackPanel>
       </Grid>
     </ExperimentalAcrylicBorder>
@@ -85,7 +85,7 @@
           <ColumnDefinition Width="*"/>
           <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <!-- Optional: Place left-side content here if needed -->
+        <!-- Place left-side content here if needed -->
         <StackPanel Orientation="Horizontal"
                     Grid.Column="1"
                     VerticalAlignment="Center"
@@ -93,7 +93,7 @@
           <!-- Settings Icon Button -->
           <Button VerticalContentAlignment="Center"
                   HorizontalContentAlignment="Center"
-                  Padding="10,5"
+                  Padding="8,5"
                   Height="30"
                   Click="RenderSettingsPage"> 
             <StackPanel Orientation="Horizontal"
@@ -117,8 +117,11 @@
 
     <!-- Main Content -->
     <Grid>
-      <!-- Acrylic Background for Main Content -->
-      <ExperimentalAcrylicBorder IsHitTestVisible="False">
+      <!-- Acrylic Background for Main Content covering both rows -->
+      <ExperimentalAcrylicBorder Grid.RowSpan="2"
+                                 HorizontalAlignment="Stretch"
+                                 VerticalAlignment="Stretch"
+                                 IsHitTestVisible="False">
         <ExperimentalAcrylicBorder.Material>
           <ExperimentalAcrylicMaterial BackgroundSource="Digger"
                                        TintColor="{DynamicResource AcrylicBackgroundColor}"
@@ -126,41 +129,60 @@
                                        MaterialOpacity="0.65" />
         </ExperimentalAcrylicBorder.Material>
       </ExperimentalAcrylicBorder>
-      <!-- Place your other main content here -->
-      <StackPanel>
-      <TextBlock Text="Enter Beatmap ID"
-                 FontSize="24"
-                 Margin="0,0,0,20"
+
+      <!-- Define two rows: one for text controls and one for images -->
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*"/>
+      </Grid.RowDefinitions>
+
+      <!-- Top Section with TextBlock and TextBox -->
+      <StackPanel Grid.Row="0" Margin="10">
+        <TextBlock Text="Enter Beatmap ID"
+                   FontSize="24"
+                   Margin="0,0,0,20"
+                   HorizontalAlignment="Center"
+                   Foreground="{DynamicResource PrimaryForegroundColor}"/>
+        <TextBox Text="{Binding BeatmapId}"
+                 MinWidth="300"
+                 MaxHeight="30"
                  HorizontalAlignment="Center"
-                 Foreground="{DynamicResource PrimaryForegroundColor}"/>
-      <TextBox Text="{Binding BeatmapId}"
-               MinWidth="300"
-               MaxHeight="30"
-               HorizontalAlignment="Center"
-               KeyDown="GetBeatmapForDownload">
-      </TextBox>
+                 KeyDown="GetBeatmapForDownload"/>
       </StackPanel>
-      <!-- Images Panel -->
-      <ScrollViewer VerticalAlignment="Center" HorizontalAlignment="Center">
-        <ItemsControl ItemsSource="{Binding BeatmapImagesBitmap}">
+
+      <!-- Images Section -->
+      <ScrollViewer Grid.Row="1"
+                    VerticalScrollBarVisibility="Auto"
+                    HorizontalScrollBarVisibility="Disabled"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    Background="Transparent">
+
+        <ItemsControl ItemsSource="{Binding BeatmapImagesBitmap}"
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Stretch">
+    
+          <!-- Vertical StackPanel -->
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
-              <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal" Margin="10"/>
+              <StackPanel Orientation="Vertical"
+                          HorizontalAlignment="Stretch"/>
             </ItemsPanelTemplate>
           </ItemsControl.ItemsPanel>
+    
+          <!-- Each item is an Image that fills the width but preserves aspect ratio -->
           <ItemsControl.ItemTemplate>
             <DataTemplate>
-              <Image Source="{Binding}" 
-                     Margin="10"
-                     Width="200"
-                     Height="200"
-                     Stretch="Uniform">
-                <Image.ContextMenu>
-                  <ContextMenu>
-                    <MenuItem Header="Save Image As..." Click="SaveImageToDiskViaContextMenu" />
-                  </ContextMenu>
-                </Image.ContextMenu>
-              </Image>
+              <!-- Border to give some margin / corner radius -->
+              <Border Margin="10"
+                      HorizontalAlignment="Stretch"
+                      CornerRadius="5"
+                      ClipToBounds="True">
+                <Image Source="{Binding}"
+                       Stretch="Uniform"
+                       HorizontalAlignment="Stretch">
+                  </Image>
+              </Border>
             </DataTemplate>
           </ItemsControl.ItemTemplate>
         </ItemsControl>

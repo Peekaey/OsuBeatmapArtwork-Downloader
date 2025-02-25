@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Threading.Tasks;
 using OsuBeatmapArtwork_Downloader.Interfaces;
 using OsuBeatmapArtwork_Downloader.Models;
@@ -54,7 +55,7 @@ public class FileService : IFileService
         }
         
     }
-    
+        
     public List<MemoryStream> GetImageContentsFromZip(string zipFilePath)
     {
         // Look through zip path for files with .png or jpg extension
@@ -65,12 +66,22 @@ public class FileService : IFileService
             foreach (var entry in zipArchive.Entries)
             {
                 // Check if the entry's name ends with .png or .jpg (case-insensitive)
-                if (entry.FullName.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ||
-                    entry.FullName.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
-                    entry.FullName.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase))
+                // Skip Lyric Folder
+                // TODO Check if more efficient way to skip lyric folder
+
+                if (entry.FullName.ToLower().Contains("sb/") && !entry.FullName.ToLower().Contains("bg/"))
+                {
+                    continue;
+                }
+                
+                if (entry.FullName.ToLower().Contains("lyric"))
+                {
+                    continue;
+                }
+                if (IsImageFile(entry.FullName))
                 {
                     var memoryStream = new MemoryStream();
-
+    
                     using (var entryStream = entry.Open())
                     {
                         entryStream.CopyTo(memoryStream);
@@ -82,4 +93,12 @@ public class FileService : IFileService
         }
         return imageStreams;
     }
+    
+    private bool IsImageFile(string fileName)
+    {
+        return fileName.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ||
+               fileName.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
+               fileName.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase);
+    }
+
 }
