@@ -6,6 +6,10 @@
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+        <SelfContained>true</SelfContained>
+        <PublishSingleFile>true</PublishSingleFile>
+        <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
     </PropertyGroup>
 
     <ItemGroup>
@@ -31,7 +35,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <AdditionalFiles Include="Views\Main\MainWindow.axaml" />
         <AdditionalFiles Include="Views\Settings\SettingsWindow.axaml" />
     </ItemGroup>
     
