@@ -50,7 +50,7 @@
           <!-- Draggable Area -->
           <Border Background="Transparent"
                   VerticalAlignment="Center"
-                  PointerPressed="TitleBar_OnPointerPressed">
+                  PointerPressed="StatusBar_OnBarPressed">
             <TextBlock Text="Settings" 
                        VerticalAlignment="Center" 
                        Margin="10,0"
@@ -61,7 +61,8 @@
                       Grid.Column="1"
                       VerticalAlignment="Center"
                       Margin="0,0,10,0">
-            <Button Width="30" Height="25" Click="Close_Click">
+            <Button Width="30" Height="25" Click="Close"
+                    Background="Transparent">
               <Path Data="{StaticResource CloseIcon}"
                     Stroke="{DynamicResource PrimaryForegroundColor}"
                     StrokeThickness="1.06"
@@ -84,43 +85,52 @@
           <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,5">
-          <TextBlock Text="Default save folder path:" 
+        <StackPanel Grid.Row="0" Orientation="Vertical" Margin="0,5">
+          <TextBlock Text="Default Download Working Directory" 
                      VerticalAlignment="Center"
+                     HorizontalAlignment="Center"
                      Foreground="{DynamicResource PrimaryForegroundBrush}"
                      Margin="0,0,10,0" />
           <TextBox Text="{Binding DefaultFolderPath, Mode=TwoWay}"
-                   MinWidth="300"
-                   VerticalAlignment="Center" />
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Stretch"
+                   IsReadOnly="True"
+                   TextAlignment="Center"/>
         </StackPanel>
         
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,5">
-          <TextBlock Text="Automatically save screenshot to default save folder path"
+        <StackPanel Grid.Row="1" Orientation="Vertical" Margin="0,5">
+          <TextBlock Text="Osu Session Cookie Value" 
                      VerticalAlignment="Center"
-                     Margin="0,0,10,0"
+                     HorizontalAlignment="Center"
+                     Foreground="{DynamicResource PrimaryForegroundBrush}"
+                     Margin="0,0,10,0" />
+          <TextBox Text="{Binding OsuSessionCookieValue, Mode=TwoWay}"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Stretch"
+                   TextAlignment="Center"/>
+        </StackPanel>
+        
+        <StackPanel Grid.Row="2" Orientation="Vertical" Margin="0,5">
+          <TextBlock Text="Save Theme and Cookie to cookie.json in Default Directory"
+                     VerticalAlignment="Center"
+                     HorizontalAlignment="Center"
+                     Margin="0,0,10,0" 
                      Foreground="{DynamicResource PrimaryForegroundColor}"/>
-          <CheckBox IsChecked="{Binding AutoSaveToDefaultFolderPath, Mode=TwoWay}"
+          <CheckBox IsChecked="{Binding SaveSettingsToConfigFile , Mode=TwoWay}"
                     BorderBrush="{DynamicResource CheckBoxBorderBrush}"
-                    VerticalAlignment="Center" />
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"/>
         </StackPanel>
         
-        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,5">
-          <TextBlock Text="Create subfolder for each beatmap"
+        <StackPanel Grid.Row="3" Orientation="Vertical" Margin="0,10" VerticalAlignment="Center">
+          <TextBlock Text="Theme" 
                      VerticalAlignment="Center"
-                     Margin="0,0,10,0"
-                     Foreground="{DynamicResource PrimaryForegroundColor}"/>
-          <CheckBox IsChecked="{Binding CreateSubfolderPerBeatmap, Mode=TwoWay}"
-                    BorderBrush="{DynamicResource CheckBoxBorderBrush}"
-                    VerticalAlignment="Center" />
-        </StackPanel>
-        
-        <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,10" VerticalAlignment="Center">
-          <TextBlock Text="Theme:" 
-                     VerticalAlignment="Center"
+                     HorizontalAlignment="Center"
                      Margin="0,0,10,0"
                      Foreground="{DynamicResource PrimaryForegroundColor}" />
           <ComboBox ItemsSource="{Binding Themes}"
                     SelectedItem="{Binding SelectedTheme, Mode=TwoWay}"
+                    HorizontalAlignment="Center"
                     Width=""/>
         </StackPanel>
       </Grid>

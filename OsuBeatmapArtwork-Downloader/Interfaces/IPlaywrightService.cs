@@ -5,5 +5,5 @@ namespace OsuBeatmapArtwork_Downloader.Interfaces;
 
 public interface IPlaywrightService
 {
-    Task<ServiceResult> DownloadBeatmap(string url, UserCookie userCookie, string downloadPath);
+    Task<PlaywrightServiceResult> DownloadBeatmap(string url, UserCookie userCookie, string downloadPath);
 }

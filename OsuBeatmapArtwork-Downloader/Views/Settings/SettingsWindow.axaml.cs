@@ -16,7 +16,7 @@ public partial class SettingsWindow : Window
         InitializeComponent();
     }
     
-    private void TitleBar_OnPointerPressed(object sender, PointerPressedEventArgs e)
+    private void StatusBar_OnBarPressed(object sender, PointerPressedEventArgs e)
     {
         if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
         {
@@ -24,9 +24,8 @@ public partial class SettingsWindow : Window
         }
     }
     
-    private void Close_Click(object sender, RoutedEventArgs e)
+    private void Close(object sender, RoutedEventArgs e)
     {
-        // Close the settings window
         this.Close();
     }
 }

@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using OsuBeatmapArtwork_Downloader.Models;
 
 namespace OsuBeatmapArtwork_Downloader.Interfaces;
 
 public interface IBeatmapService
 {
-    Task<List<MemoryStream>>? DownloadBeatmap(string textInput, bool autoSaveToDefaultFolderPath, string defaultFolderPath);
+    Task<DownloadResult> DownloadBeatmap(string textInput, string defaultFolderPath, string cookie);
 }

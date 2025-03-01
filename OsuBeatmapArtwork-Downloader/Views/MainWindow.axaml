@@ -20,8 +20,9 @@
   </Design.DataContext>
 
   <DockPanel>
+    <!-- Hide for Linux/MacOS & Render for Windows -->
     <!-- Custom Title Bar with Acrylic Effect -->
-    <ExperimentalAcrylicBorder DockPanel.Dock="Top" Height="40">
+    <ExperimentalAcrylicBorder x:Name="StatusBar" DockPanel.Dock="Top" Height="40">
       <ExperimentalAcrylicBorder.Material>
         <ExperimentalAcrylicMaterial BackgroundSource="Digger"
                                      TintColor="{DynamicResource AcrylicBackgroundColor}"
@@ -37,7 +38,7 @@
         <!-- Draggable Area -->
         <Border Background="Transparent"
                 VerticalAlignment="Center"
-                PointerPressed="TitleBar_OnPointerPressed">
+                PointerPressed="StatusBar_OnBarPressed">
           <TextBlock Text="Beatmap Artwork Downloader" 
                      VerticalAlignment="Center" 
                      Margin="10,0"
@@ -48,20 +49,23 @@
                     Grid.Column="1"
                     VerticalAlignment="Center"
                     Margin="0,0,10,0">
-          <Button Width="30" Height="25" Click="Minimise">
+          <Button Width="30" Height="25" Click="Minimise"
+                  Background="Transparent">
             <Path Data="{StaticResource MinimiseIcon}"
                   Fill="{DynamicResource PrimaryForegroundColor}"
                   Stretch="Uniform"
                   VerticalAlignment="Center"/>
           </Button>
-          <Button Width="30" Height="25" Click="Maximise">
+          <Button Width="30" Height="25" Click="Maximise"
+                  Background="Transparent">
             <Path Data="{StaticResource MaximiseIcon}"
                   Fill="{DynamicResource PrimaryForegroundColor}"
                   StrokeThickness="2"
                   Stretch="Uniform"
                   VerticalAlignment="Center"/>
           </Button>
-          <Button Width="30" Height="25" Click="Close">
+          <Button Width="30" Height="25" Click="Close"
+                  Background="Transparent">
             <Path Data="{StaticResource CloseIcon}"
                   Stroke="{DynamicResource PrimaryForegroundColor}"
                   StrokeThickness="1.06"
@@ -71,7 +75,7 @@
         </StackPanel>
       </Grid>
     </ExperimentalAcrylicBorder>
-
+    
     <!-- Second Bar for Additional Controls (e.g., Settings) -->
     <ExperimentalAcrylicBorder DockPanel.Dock="Top" Height="32">
       <ExperimentalAcrylicBorder.Material>
@@ -95,7 +99,8 @@
                   HorizontalContentAlignment="Center"
                   Padding="8,5"
                   Height="30"
-                  Click="RenderSettingsPage"> 
+                  Click="RenderSettingsPage"
+                  Background="Transparent"> 
             <StackPanel Orientation="Horizontal"
                         Spacing="5"
                         VerticalAlignment="Center"
@@ -147,7 +152,15 @@
                  MinWidth="300"
                  MaxHeight="30"
                  HorizontalAlignment="Center"
+                 TextAlignment="Center"
                  KeyDown="GetBeatmapForDownload"/>
+        <TextBlock Text="{Binding StatusMessage}"
+                   FontSize="16"
+                   Margin="0,5,0,20"
+                   HorizontalAlignment="Center"
+                   Foreground="{DynamicResource PrimaryForegroundColor}"
+                   IsVisible="{Binding IsBusy}">
+        </TextBlock>
       </StackPanel>
 
       <!-- Images Section -->
@@ -181,7 +194,12 @@
                 <Image Source="{Binding}"
                        Stretch="Uniform"
                        HorizontalAlignment="Stretch">
-                  </Image>
+                  <Image.ContextMenu>
+                    <ContextMenu>
+                    <MenuItem Header="Save As" Click="SaveImageToDisk" CommandParameter="{Binding}" ></MenuItem>
+                    </ContextMenu>
+                  </Image.ContextMenu>
+                </Image>
               </Border>
             </DataTemplate>
           </ItemsControl.ItemTemplate>

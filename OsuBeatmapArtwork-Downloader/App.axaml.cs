@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core;
@@ -6,6 +8,7 @@ using Avalonia.Data.Core.Plugins;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text.Json;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.Styling;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +25,8 @@ namespace OsuBeatmapArtwork_Downloader;
 public partial class App : Application
 {
     private IServiceProvider _serviceProvider;
+    public static IServiceProvider ServiceProvider { get; private set; }
+    
     private StyleInclude? _lightTheme;
     private StyleInclude? _darkTheme;
     
@@ -37,8 +42,6 @@ public partial class App : Application
         {
             Source = new Uri("avares://OsuBeatmapArtwork-Downloader/Themes/DarkTheme.axaml")
         };
-
-        SetTheme(Themes.Light);
     }
 
     public override void OnFrameworkInitializationCompleted()
@@ -58,18 +61,40 @@ public partial class App : Application
             });
         services.AddSingleton<IBeatmapService, BeatmapService>();
         services.AddSingleton<IFileService, FileService>();
-        services.AddSingleton<IOsPlatformHelpers, OsPlatformHelpers>();
         services.AddSingleton<IValidationHelper, ValidationHelper>();
         services.AddSingleton<IPlaywrightService, PlaywrightService>();
         services.AddSingleton<IImageHelpers, ImageHelpers>();
-        
-        services.AddSingleton<AppSettings>();
+
+        services.AddSingleton<AppSettings>(provider =>
+        {
+            var settings = new AppSettings();
+            if (File.Exists(settings.ConfigFilePath))
+            {
+                try
+                {
+                    
+                    var configContexts = File.ReadAllText(settings.ConfigFilePath);
+                    var configDictionary = JsonSerializer.Deserialize<Dictionary<string, string>>(configContexts);
+                    settings.OsuCookieValue = configDictionary?["Cookie"];
+                    settings.SelectedThemes = (Themes)Enum.Parse(typeof(Themes), configDictionary?["Theme"] ?? "0");
+                    settings.SaveSettingsToConfigFile = true;                    settings.SaveSettingsToConfigFile = true;
+                }
+                catch (Exception e)
+                {
+                    // If can't read value from file, assume file is corrupt or invalid
+                    // Do nothing and run with default settings
+                    Console.WriteLine("Error reading config file: " + e.Message);
+                }
+            }
+            return settings;
+        });
         
         services.AddTransient<MainWindowViewModel>();
         services.AddTransient<SettingsWindowViewModel>();
         
         
         _serviceProvider = services.BuildServiceProvider();
+        ServiceProvider = _serviceProvider;
         
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
@@ -81,7 +106,8 @@ public partial class App : Application
                 DataContext = _serviceProvider.GetRequiredService<MainWindowViewModel>()
             };
         }
-
+        
+        SetTheme(_serviceProvider.GetRequiredService<AppSettings>().SelectedThemes);
         base.OnFrameworkInitializationCompleted();
     }
     

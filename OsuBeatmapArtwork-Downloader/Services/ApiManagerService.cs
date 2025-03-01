@@ -15,6 +15,7 @@ public class ApiManagerService : IApiManagerService
     private readonly HttpClient _httpClient;
     private readonly CookieContainer _cookieContainer;
     
+    // Unused Service - Can remove when wanted
     public ApiManagerService(ILogger<ApiManagerService> logger, HttpClient httpClient, CookieContainer cookieContainer)
     {
         _logger = logger;

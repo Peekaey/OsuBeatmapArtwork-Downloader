@@ -12,7 +12,7 @@ namespace OsuBeatmapArtwork_Downloader.Services;
 public class PlaywrightService : IPlaywrightService
 {
 
-    public async Task<ServiceResult> DownloadBeatmap(string url, UserCookie userCookie, string downloadPath)
+    public async Task<PlaywrightServiceResult> DownloadBeatmap(string url, UserCookie userCookie, string downloadPath)
     {
         var playwright = await Playwright.CreateAsync();
         var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
@@ -53,11 +53,19 @@ public class PlaywrightService : IPlaywrightService
 
         if (initialResponse.Status == 404)
         {
-            return ServiceResult.AsFailure("Beatmap not found");
+            return PlaywrightServiceResult.AsFailure("Beatmap not found");
         }
         
-        await page.WaitForSelectorAsync("a.btn-osu-big.btn-osu-big--beatmapset-header");
-
+        var element = await page.QuerySelectorAsync("a.btn-osu-big.btn-osu-big--beatmapset-header");
+        if (element != null)
+        {
+            await page.WaitForSelectorAsync("a.btn-osu-big.btn-osu-big--beatmapset-header");
+        }
+        else
+        {
+            return PlaywrightServiceResult.AsFailure("Unable to find download button. Check cookie value");
+        }
+        
         // Click Download Button to Trigger
         await page.ClickAsync("a.btn-osu-big.btn-osu-big--beatmapset-header");
 
@@ -70,7 +78,7 @@ public class PlaywrightService : IPlaywrightService
         using var response = await client.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead);
         if (!response.IsSuccessStatusCode)
         {
-            return ServiceResult.AsFailure("Failed to download beatmap");
+            return PlaywrightServiceResult.AsFailure("Failed to download beatmap");
         }
             
         var headerFileName = response.Content.Headers.ContentDisposition?.FileName.Replace("\"", "") ?? "beatmap.zip";
@@ -82,13 +90,13 @@ public class PlaywrightService : IPlaywrightService
                 await response.Content.CopyToAsync(fileStream);
                 await fileStream.FlushAsync(); // Ensure the file stream is flushed
                 await browser.CloseAsync();
-                return new ServiceResult(true, combinedDownloadPath);
+                return PlaywrightServiceResult.AsSuccess(combinedDownloadPath, Path.GetFileNameWithoutExtension(headerFileName));
             }
         }
         catch (Exception e)
         {
             await browser.CloseAsync();
-            return new ServiceResult(false, e.Message);
+            return new PlaywrightServiceResult(false, e.Message);
         }
     }
 }

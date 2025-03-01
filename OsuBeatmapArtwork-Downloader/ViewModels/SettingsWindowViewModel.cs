@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using Avalonia;
+using OsuBeatmapArtwork_Downloader.Interfaces;
 using OsuBeatmapArtwork_Downloader.Models;
 
 namespace OsuBeatmapArtwork_Downloader.ViewModels;
@@ -10,15 +11,18 @@ namespace OsuBeatmapArtwork_Downloader.ViewModels;
 public class SettingsWindowViewModel : ViewModelBase , INotifyPropertyChanged
 {
         private readonly AppSettings _appSettings;
+        private readonly IFileService _fileService;
     
-    public SettingsWindowViewModel(AppSettings appSettings)
+    public SettingsWindowViewModel(AppSettings appSettings, IFileService fileService)
     {
         _appSettings = appSettings;
+        _fileService = fileService;
         // Populate available themes
         Themes = Enum.GetValues(typeof(Themes)).Cast<Themes>().ToList();
     }
     
     // Gets properties on Initialisation from AppSettings
+    // Working Directory
     public string DefaultFolderPath
     {
         get => _appSettings.DefaultFolderPath;
@@ -32,29 +36,47 @@ public class SettingsWindowViewModel : ViewModelBase , INotifyPropertyChanged
         }
     }
     
-    public bool CreateSubfolderPerBeatmap
+    // Value of the Users Cookie Session Value
+    public string OsuSessionCookieValue
     {
-        get => _appSettings.CreateSubfolderPerBeatmap;
+        get => _appSettings.OsuCookieValue;
         set
         {
-            if (_appSettings.CreateSubfolderPerBeatmap != value)
+            if (_appSettings.OsuCookieValue != value)
             {
-                _appSettings.CreateSubfolderPerBeatmap = value;
-                OnPropertyChanged(nameof(CreateSubfolderPerBeatmap));
+                _appSettings.OsuCookieValue = value;
+
+                if (_appSettings.SaveSettingsToConfigFile == true)
+                { 
+                    _fileService.SaveSettingsToJsonConfig(_appSettings.DefaultFolderPath,
+                        _appSettings.ConfigFilePath, _appSettings.OsuCookieValue, _appSettings.SelectedThemes.ToString());
+                }
+                
+                OnPropertyChanged(nameof(OsuSessionCookieValue));
             }
         }
     }
-
-
-    public bool AutoSaveToDefaultFolderPath
+    
+    public bool SaveSettingsToConfigFile
     {
-        get => _appSettings.AutoSaveToDefaultFolderPath;
+        get => _appSettings.SaveSettingsToConfigFile;
         set
         {
-            if (_appSettings.AutoSaveToDefaultFolderPath != value)
+            if (_appSettings.SaveSettingsToConfigFile != value)
             {
-                _appSettings.AutoSaveToDefaultFolderPath = value;
-                OnPropertyChanged(nameof(AutoSaveToDefaultFolderPath));
+                _appSettings.SaveSettingsToConfigFile = value;
+
+                if (_appSettings.SaveSettingsToConfigFile == true)
+                {
+                        _fileService.SaveSettingsToJsonConfig(_appSettings.DefaultFolderPath,
+                            _appSettings.ConfigFilePath, _appSettings.OsuCookieValue, _appSettings.SelectedThemes.ToString());
+                }
+                else
+                {
+                    _fileService.RemoveSettingsJsonConfig(_appSettings.ConfigFilePath);
+                    _appSettings.OsuCookieValue = string.Empty;
+                }
+                OnPropertyChanged(nameof(SaveSettingsToConfigFile));
             }
         }
     }
@@ -72,6 +94,13 @@ public class SettingsWindowViewModel : ViewModelBase , INotifyPropertyChanged
                 // Dynamically apply the new theme
                 var app = (App)Application.Current;
                 app.SetTheme(value);
+                
+                if (_appSettings.SaveSettingsToConfigFile == true)
+                {
+                    _fileService.SaveSettingsToJsonConfig(_appSettings.DefaultFolderPath,
+                        _appSettings.ConfigFilePath, _appSettings.OsuCookieValue, _appSettings.SelectedThemes.ToString());
+                }
+                
                 OnPropertyChanged(nameof(SelectedTheme));
 
             }

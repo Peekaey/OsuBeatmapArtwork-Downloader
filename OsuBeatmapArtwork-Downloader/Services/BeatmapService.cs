@@ -9,15 +9,10 @@ namespace OsuBeatmapArtwork_Downloader.Services;
 
 public class BeatmapService : IBeatmapService
 {
-    private readonly string _beatmapUrl = "";
-    private readonly string _baseURL = "";
-    private readonly string beatmapId = "";
-    
-
+    private readonly string _baseBeatmapUrl = "https://osu.ppy.sh/beatmapsets/";
     private readonly IApiManagerService _apiManagerService;
     private readonly IPlaywrightService _playwrightService;
     private readonly IFileService _fileService;
-    
     
     public BeatmapService(IApiManagerService apiManagerService, IPlaywrightService playwrightService, IFileService fileService)
     {
@@ -26,43 +21,41 @@ public class BeatmapService : IBeatmapService
         _fileService = fileService;
     }
     
-    public async Task<List<MemoryStream>>? DownloadBeatmap(string textInput, bool autoSaveToDefaultFolderPath, string defaultFolderPath)
+    public async Task<DownloadResult> DownloadBeatmap(string textInput, string defaultFolderPath, string cookie)
     {
-        var downloadUrl = CreateDownloadUrl(textInput);
-        
-        var directoryResult = _fileService.CheckDirectoryExists(defaultFolderPath);
-        
-        if (directoryResult.Success == false)
+        if (string.IsNullOrEmpty(cookie))
         {
-            return null;
+            return DownloadResult.AsFailure("Cookie value has not been supplied");
+        }
+        
+        var workingDirectoryResult = _fileService.CreateWorkingDirectory(defaultFolderPath);
+        
+        if (workingDirectoryResult.Success == false)
+        {
+            return DownloadResult.AsFailure("Unable to create working directory before downloading beatmap");
         }
         
         var userCookie = new UserCookie
         {
-            Expires = FormatExpireDateTime(""),
-            Value = "",
+            Value = cookie
         };
         
+        var downloadUrl = CreateDownloadUrl(textInput);
         var downloadResult = await _playwrightService.DownloadBeatmap(downloadUrl, userCookie,  defaultFolderPath);
 
         if (downloadResult.Success)
         {
-            var images = _fileService.GetImagesFromBeatmap(downloadResult.ErrorMessage);
-            return images;
+            var images = _fileService.GetImagesFromBeatmap(downloadResult.SavedBeatmapPath);
+            return DownloadResult.AsSuccess(downloadResult.BeatmapName,images);
         }
         else
         {
-            return null;
+            return DownloadResult.AsFailure(downloadResult.ErrorMessage);
         }
     }
     
     private string CreateDownloadUrl(string textInput)
     {
-        return $"{_beatmapUrl}{textInput}/download";
-    }
-    
-    private DateTime FormatExpireDateTime(string expireDate)
-    {
-        return DateTime.Parse(expireDate);
+        return $"{_baseBeatmapUrl}{textInput}/download";
     }
 }

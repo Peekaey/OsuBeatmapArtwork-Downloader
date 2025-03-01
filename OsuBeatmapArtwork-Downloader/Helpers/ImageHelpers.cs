@@ -19,16 +19,12 @@ public class ImageHelpers : IImageHelpers
         return beatmapImagesBitmap;
     }
     
-    public List<MemoryStream> ConvertBitmapToMemoryStream(List<Bitmap> beatmapImagesBitmap)
+    public MemoryStream ConvertBitmapToMemoryStream(Bitmap bitmap)
     {
-        var beatmapImages = new List<MemoryStream>();
-        foreach (var bitmap in beatmapImagesBitmap)
-        {
-            var memoryStream = new MemoryStream();
-            bitmap.Save(memoryStream);
-            memoryStream.Position = 0;
-            beatmapImages.Add(memoryStream);
-        }
-        return beatmapImages;
+        var memoryStream = new MemoryStream();
+        bitmap.Save(memoryStream);
+        memoryStream.Position = 0;
+        return memoryStream;
+        
     }
 }

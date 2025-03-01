@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform.Storage;
 using OsuBeatmapArtwork_Downloader.Interfaces;
 using OsuBeatmapArtwork_Downloader.Models;
 
@@ -15,12 +18,11 @@ public class FileService : IFileService
     {
         return FileSaveResult.AsFileSaveSuccess("");
     }
-
-    public ServiceResult CheckDirectoryExists(string folderPath)
+    
+    public ServiceResult CreateWorkingDirectory(string folderPath)
     {
         try
         {
-            // Ensure download directory exists
             if (!Directory.Exists(folderPath))
             {
                 Directory.CreateDirectory(folderPath);
@@ -32,31 +34,66 @@ public class FileService : IFileService
             return ServiceResult.AsFailure(e.Message);
         }
     }
+    
+    public ServiceResult RemoveDirectory(string folderPath)
+    {
+        try
+        {
+            if (Directory.Exists(folderPath))
+            {
+                Directory.Delete(folderPath, true);
+            }
+            return ServiceResult.AsSuccess();
+        }
+        catch (IOException e)
+        {
+            return ServiceResult.AsFailure(e.Message);
+        }
+    }
+    
+    public ServiceResult RemoveFile(string filePath)
+    {
+        try
+        {
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+            return ServiceResult.AsSuccess();
+        }
+        catch (IOException e)
+        {
+            return ServiceResult.AsFailure(e.Message);
+        }
+    }
 
     public List<MemoryStream>? GetImagesFromBeatmap(string beatmapFilePath)
     {
-        //Chang file extension from .osz to .zip
+        //Change file extension from .osz to .zip
         try
         {
-            // Add Fallsafe to keep executing if the file exists
             var zipFilePath = beatmapFilePath.Replace(".osz", ".zip");
             
             if (!File.Exists(zipFilePath))
             {
                 File.Move(beatmapFilePath, zipFilePath);
             }
-            
             var images = GetImageContentsFromZip(zipFilePath);
+            
+            // Delete zip file & osz file after extracting images to memory as we no longer need download
+            // Could potentially just leave file to save on identical future calls
+            // But better to clean up after ourselves as the savings are minial
+            RemoveFile(zipFilePath);
+            RemoveFile(beatmapFilePath);
             return images;
         }
         catch (IOException e)
         {
             return null;
         }
-        
     }
         
-    public List<MemoryStream> GetImageContentsFromZip(string zipFilePath)
+    private List<MemoryStream> GetImageContentsFromZip(string zipFilePath)
     {
         // Look through zip path for files with .png or jpg extension
         var imageStreams = new List<MemoryStream>();
@@ -66,7 +103,7 @@ public class FileService : IFileService
             foreach (var entry in zipArchive.Entries)
             {
                 // Check if the entry's name ends with .png or .jpg (case-insensitive)
-                // Skip Lyric Folder
+                // && Skip Lyric Folder
                 // TODO Check if more efficient way to skip lyric folder
 
                 if (entry.FullName.ToLower().Contains("sb/") && !entry.FullName.ToLower().Contains("bg/"))
@@ -99,6 +136,72 @@ public class FileService : IFileService
         return fileName.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ||
                fileName.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
                fileName.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase);
+    }
+    
+    public async Task<FileSaveResult> SaveScreenshotToDisk(IStorageFile storageFile, Bitmap imageBitmap)
+    {
+        try
+        {
+            await Task.Run(() =>
+            {
+                using var fileStream = File.Create(storageFile.Path.AbsolutePath);
+                imageBitmap.Save(fileStream);
+            });
+            Console.WriteLine($"Saved image to {storageFile.Path.AbsolutePath}");
+            return FileSaveResult.AsFileSaveSuccess(storageFile.Path.AbsolutePath);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error saving image: {e.Message}");
+            return FileSaveResult.AsFileSaveFailure(e.Message);
+        }
+    }
+    
+    public async Task<FileSaveResult> SaveSettingsToJsonConfig(string defaultSaveDirectory, string configSavePath, string cookie, string theme)
+    {
+        try
+        {
+            var parentDirectory = Path.GetDirectoryName(configSavePath);
+            var workingDirectoryResult = CreateWorkingDirectory(parentDirectory);
+            
+            if (!File.Exists(configSavePath))
+            {
+                using (File.Create(configSavePath)) { }
+            }
+
+            // In the case user purely wishes to save theme selection and not cookie
+            if (cookie == null)
+            {
+                cookie = "";
+            }
+            var cookieJson = JsonSerializer.Serialize(new { Cookie = cookie, Theme = theme });
+            await File.WriteAllTextAsync(configSavePath, cookieJson);
+            return FileSaveResult.AsFileSaveSuccess(configSavePath);
+            
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error saving cookie: {e.Message}");
+            return FileSaveResult.AsFileSaveFailure(e.Message);
+        }
+    }
+
+    public async Task<FileSaveResult> RemoveSettingsJsonConfig(string configSavePath)
+    {
+        try
+        {
+            if (File.Exists(configSavePath))
+            {
+                File.Delete(configSavePath);
+            }
+            // Assume file is already deleted if it doesn't exist
+            return FileSaveResult.AsFileSaveSuccess("");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error removing cookie: {e.Message}");
+            return FileSaveResult.AsFileSaveFailure(e.Message);
+        }
     }
 
 }
