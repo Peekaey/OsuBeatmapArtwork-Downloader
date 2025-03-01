@@ -24,9 +24,9 @@ Automates the process of downloading beatmaps and extracting the artwork. Only k
   - **A:** As you may or not be aware, being logged into the Osu site is required to download beatmaps. There is the option of using third
   party mirror sites to download the beatmaps without being authenticated, however they do not have all the beatmaps that are currently available from official sources.
     -  There is also an official Api Endpoint that can be authenticated with OAuth to download beatmapsets which is found at the [osu!api v2 documentation](https://osu.ppy.sh/docs/index.html#get-apiv2beatmapsetsbeatmapset) , however this endpoint is currently only available to the Osu Lazer Client.
-    - Once this endpoint is publicly available can the auth method can be changed to one that is more desireable.
+    - Once this endpoint is publicly available, the auth method can be changed to use OAuth to authenticate and download the beatmapsets.
 - **Q:** Do I need to enter my session cookie each time?
-- **A:** The session cookie needs to be provided each time the application is started as the cookie is not stored by default. Tthere is an option in the settings to save this cookie 
+- **A:** The session cookie needs to be provided each time the application is started as the cookie is not stored by default. There is an option in the settings to save this cookie 
   to a json config file for the application to read and load automatically on startup. 
 
 Made with [Avalonia UI](https://avaloniaui.net/).
