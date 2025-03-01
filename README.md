@@ -11,6 +11,12 @@ Automates the process of downloading beatmaps and extracting the artwork. Only k
 3. Application will download the beatmapset in the background, load any images found in the beatmapset to memory and delete the beatmapset automatically.
 4. Images are displayed to the user with the option to save any desired image in original quality.
 
+### Features
+- Download Artwork in original quality from any beatmapset available on osu.ppy.sh
+- Choice of only storing cookie during runtime or saving to a json config file to be initialised on startup
+- Light / Dark Theme
+- Easy to use!
+
 
 ### FAQ
 - **Q:** Why do I need to provide my session cookie from the osu site?
@@ -21,4 +27,4 @@ Automates the process of downloading beatmaps and extracting the artwork. Only k
 - **Q:** Do I need to enter my session cookie each time?
 - **A:** The session cookie needs to be provided each time the application is started as the cookie is not stored by default. Tthere is an option in the settings to save this cookie 
   to a json config file for the application to read and load automatically on startup. 
-
+~~~~~~~~
